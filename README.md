@@ -6,17 +6,15 @@
 var phoneCall = new StateMachine<State, Trigger>(State.OffHook);
 
 phoneCall.Configure(State.OffHook)
-    .Permit(Trigger.CallDialed, State.Ringing);
+    .Permit(Trigger.CallDialled, State.Ringing);
 	
 phoneCall.Configure(State.Ringing)
-    .Permit(Trigger.HungUp, State.OffHook)
     .Permit(Trigger.CallConnected, State.Connected);
  
 phoneCall.Configure(State.Connected)
     .OnEntry(() => StartCallTimer())
     .OnExit(() => StopCallTimer())
     .Permit(Trigger.LeftMessage, State.OffHook)
-    .Permit(Trigger.HungUp, State.OffHook)
     .Permit(Trigger.PlacedOnHold, State.OnHold);
 
 // ...
@@ -52,7 +50,6 @@ In the example below, the `OnHold` state is a substate of the `Connected` state.
 phoneCall.Configure(State.OnHold)
     .SubstateOf(State.Connected)
     .Permit(Trigger.TakenOffHold, State.Connected)
-    .Permit(Trigger.HungUp, State.OffHook)
     .Permit(Trigger.PhoneHurledAgainstWall, State.PhoneDestroyed);
 ```
 
@@ -140,7 +137,7 @@ It can be useful to visualize state machines on runtime. With this approach the 
  
 ```csharp
 phoneCall.Configure(State.OffHook)
-    .PermitIf(Trigger.CallDialed, State.Ringing, IsValidNumber);
+    .PermitIf(Trigger.CallDialled, State.Ringing, IsValidNumber);
     
 string graph = phoneCall.ToDotGraph();
 ```
@@ -149,7 +146,7 @@ The `StateMachine.ToDotGraph()` method returns a string representation of the st
 
 ```dot
 digraph {
-  OffHook -> Ringing [label="CallDialed [IsValidNumber]"];
+  OffHook -> Ringing [label="CallDialled [IsValidNumber]"];
 }
 ```
 
@@ -177,7 +174,7 @@ await stateMachine.FireAsync(Trigger.Assigned);
 
 ## Building
 
-Stateless runs on .NET 4.0+ and practically all modern .NET platforms by targeting .NET Standard 1.0. [Visual Studio 2015 and .NET Core] are required to build the solution.
+Stateless runs on .NET 4.0+ and practically all modern .NET platforms by targeting .NET Standard 1.0. Visual Studio 2017 is required to build the solution.
 
 
 ## Project Goals
